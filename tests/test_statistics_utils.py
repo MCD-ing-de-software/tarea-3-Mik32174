@@ -138,23 +138,35 @@ class TestStatisticsUtils(unittest.TestCase):
     def test_min_max_scale_maps_to_zero_one_range(self):
         """Test que verifica que el método min_max_scale escala correctamente una secuencia
         numérica al rango [0, 1], donde el valor mínimo se mapea a 0 y el máximo a 1.
-        
-        Escenario esperado:
-        - Crear una lista de números (ej: [2, 4, 6])
-        - Llamar a min_max_scale para obtener los valores escalados (resultado es un array de NumPy)
-        - Verificar que el valor mínimo del resultado es 0.0 (usar self.assertAlmostEqual para un solo valor numérico - unittest es suficiente)
-        - Verificar que el valor máximo del resultado es 1.0 (usar self.assertAlmostEqual para un solo valor numérico - unittest es suficiente)
-        - Verificar que los valores transformados son correctos (ej: [0.0, 0.5, 1.0] para [2, 4, 6]) (usar numpy.testing.assert_allclose() para comparar el array completo - esto es necesario para comparar arrays de NumPy con tolerancia para errores de punto flotante)
         """
+        utils = StatisticsUtils()
+        #Escenario esperado:
+        # - Crear una lista de números (ej: [2, 4, 6])
+        arr=[2, 4, 6]
+        result=utils.min_max_scale(arr)
+
+        # - Llamar a min_max_scale para obtener los valores escalados (resultado es un array de NumPy)
+        # - Verificar que el valor mínimo del resultado es 0.0 (usar self.assertAlmostEqual para un solo valor numérico - unittest es suficiente)
+        self.assertAlmostEqual(result.min(),0.0,places=10)
+        # - Verificar que el valor máximo del resultado es 1.0 (usar self.assertAlmostEqual para un solo valor numérico - unittest es suficiente)
+        self.assertAlmostEqual(result.max(),1.0,places=10)
+        # - Verificar que los valores transformados son correctos (ej: [0.0, 0.5, 1.0] para [2, 4, 6]) 
+        # (usar numpy.testing.assert_allclose() para comparar el array completo - esto es necesario para 
+        #  arrays de NumPy con tolerancia para errores de punto flotante)
+        esperado=[0.0, 0.5, 1.0]
+        npt.assert_allclose(result,esperado,rtol=1e-10,atol=1e-10)
 
     def test_min_max_scale_raises_for_constant_values(self):
         """Test que verifica que el método min_max_scale lanza un ValueError cuando
         se llama con una secuencia donde todos los valores son iguales (no hay variación).
-        
-        Escenario esperado:
-        - Crear una lista con todos los valores iguales (ej: [3, 3, 3])
-        - Llamar a min_max_scale con esa secuencia y verificar que se lanza un ValueError indicando que todos los valores son iguales (usar self.assertRaises)
         """
+        utils = StatisticsUtils()
+        # Escenario esperado:
+        # - Crear una lista con todos los valores iguales (ej: [3, 3, 3])
+        arr=[3, 3, 3]
+        # - Llamar a min_max_scale con esa secuencia y verificar que se lanza un ValueError indicando que todos los valores son iguales (usar self.assertRaises)
+        with self.assertRaises(ValueError):
+            utils.min_max_scale(arr)
 
 
 if __name__ == "__main__":
