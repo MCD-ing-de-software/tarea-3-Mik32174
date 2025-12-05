@@ -49,54 +49,91 @@ class TestStatisticsUtils(unittest.TestCase):
     def test_moving_average_basic_case(self):
         """Test que verifica que el método moving_average calcula correctamente la media móvil
         de una secuencia numérica para un caso básico.
-        
-        Escenario esperado:
-        - Crear una lista de números (ej: [1, 2, 3, 4])
-        - Llamar a moving_average con window=2
-        - Verificar que el resultado es correcto (ej: [1.5, 2.5, 3.5] para el array dado) (usar numpy.testing.assert_allclose() para comparar arrays de NumPy - esto es mejor que unittest porque maneja la comparación de arrays numéricos con tolerancia para errores de punto flotante)
-        - Verificar que el resultado tiene la forma (shape) esperada (usar self.assertEqual para comparar tuplas de .shape - comparación simple, unittest es suficiente)
         """
+        utils = StatisticsUtils()
+        # Escenario esperado:
+        # - Crear una lista de números (ej: [1, 2, 3, 4])
+        arr = [1, 2, 3, 4]
+        # - Llamar a moving_average con window=2
+        result = utils.moving_average(arr,window=2)
+        # - Verificar que el resultado es correcto (ej: [1.5, 2.5, 3.5] para el array dado)
+        esperado=[1.5, 2.5, 3.5]
+        #  (usar numpy.testing.assert_allclose() para comparar arrays de NumPy - esto es mejor que unittest 
+        # porque maneja la comparación de arrays numéricos con tolerancia para errores de punto flotante)
+        npt.assert_allclose(result,esperado,rtol=1e-7, atol=1e-7)
+        # - Verificar que el resultado tiene la forma (shape) esperada 
+        # (usar self.assertEqual para comparar tuplas de .shape - comparación simple, unittest es suficiente)
+        self.assertEqual(result.shape,(3,))
+        
 
     def test_moving_average_raises_for_invalid_window(self):
         """Test que verifica que el método moving_average lanza un ValueError cuando
         se proporciona una ventana (window) inválida.
-        
-        Escenario esperado:
-        - Crear una lista de números (ej: [1, 2, 3])
-        - Llamar a moving_average con window=0 (valor no positivo) y verificar que se lanza un ValueError (usar self.assertRaises)
-        - Llamar a moving_average con window mayor que la longitud del array y verificar que se lanza un ValueError (usar self.assertRaises)
         """
+        utils = StatisticsUtils()
+        # Escenario esperado:
+        # - Crear una lista de números (ej: [1, 2, 3])
+        arr = [1, 2, 3]
+        # - Llamar a moving_average con window=0 (valor no positivo) y 
+        # verificar que se lanza un ValueError (usar self.assertRaises)
+        with self.assertRaises(ValueError):
+            utils.moving_average(arr,window=0)
+
+        # - Llamar a moving_average con window mayor que la longitud del array 
+        # y verificar que se lanza un ValueError (usar self.assertRaises)
+        with self.assertRaises(ValueError):
+            utils.moving_average(arr,window=4)
+        
 
     def test_moving_average_only_accepts_1d_sequences(self):
         """Test que verifica que el método moving_average lanza un ValueError cuando
         se llama con una secuencia multidimensional.
-        
-        Escenario esperado:
-        - Crear una secuencia bidimensional (ej: [[1, 2], [3, 4]])
-        - Llamar a moving_average con esa secuencia y verificar que se lanza un ValueError indicando que solo se aceptan secuencias 1D (usar self.assertRaises)
         """
+        utils = StatisticsUtils()
+        # Escenario esperado:
+        # - Crear una secuencia bidimensional (ej: [[1, 2], [3, 4]])
+        arr=[[1, 2], [3, 4]]
+        # - Llamar a moving_average con esa secuencia y verificar que se lanza un 
+        # ValueError indicando que solo se aceptan secuencias 1D (usar self.assertRaises)
+        with self.assertRaises(ValueError):
+            utils.moving_average(arr,window=2)
+        
 
     def test_zscore_has_mean_zero_and_unit_std(self):
         """Test que verifica que el método zscore calcula correctamente los z-scores
         de una secuencia numérica, comprobando que el resultado tiene media cero y
         desviación estándar unitaria.
-        
-        Escenario esperado:
-        - Crear una lista de números (ej: [10, 20, 30, 40])
-        - Llamar a zscore para obtener los z-scores (resultado es un array de NumPy)
-        - Verificar que la media del resultado es aproximadamente 0 (usar self.assertAlmostEqual para un solo valor numérico - unittest es suficiente)
-        - Verificar que la desviación estándar del resultado es aproximadamente 1 (usar self.assertAlmostEqual para un solo valor numérico - unittest es suficiente)
         """
+        utils = StatisticsUtils()
+        # Escenario esperado:
+        # - Crear una lista de números (ej: [10, 20, 30, 40])
+        arr=[10, 20, 30, 40]
+        # - Llamar a zscore para obtener los z-scores (resultado es un array de NumPy)
+        result = utils.zscore(arr)
+
+        # - Verificar que la media del resultado es aproximadamente 0 (usar self.assertAlmostEqual
+        #places:decimales
+        self.assertAlmostEqual(result.mean(),0.0,places=10)
+        #  para un solo valor numérico - unittest es suficiente)
+        # - Verificar que la desviación estándar del resultado es aproximadamente 1 (usar self.assertAlmostEqual 
+        # para un solo valor numérico - unittest es suficiente)
+        self.assertAlmostEqual(result.std(),1.0,places=10)
+
 
     def test_zscore_raises_for_zero_std(self):
         """Test que verifica que el método zscore lanza un ValueError cuando
         se llama con una secuencia que tiene desviación estándar cero
         (todos los valores son iguales).
-        
-        Escenario esperado:
-        - Crear una lista con todos los valores iguales (ej: [5, 5, 5])
-        - Llamar a zscore con esa secuencia y verificar que se lanza un ValueError indicando que la desviación estándar es cero (usar self.assertRaises)
         """
+        utils = StatisticsUtils()
+        # Escenario esperado:
+        # - Crear una lista con todos los valores iguales (ej: [5, 5, 5])
+        arr=[5, 5, 5]
+        # - Llamar a zscore con esa secuencia y verificar que se lanza un ValueError indicando que 
+        # la desviación estándar es cero (usar self.assertRaises)
+        with self.assertRaises(ValueError):
+            utils.zscore(arr)
+        
 
     def test_min_max_scale_maps_to_zero_one_range(self):
         """Test que verifica que el método min_max_scale escala correctamente una secuencia
